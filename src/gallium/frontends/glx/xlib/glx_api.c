@@ -36,6 +36,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <X11/Xmd.h>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #include <GL/glxproto.h>
 
 #include "xm_api.h"
@@ -1168,6 +1170,22 @@ glXCreateContext( Display *dpy, XVisualInfo *visinfo,
                          1, 0, GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB, 0x0);
 }
 
+static void                                                      
+change_string_property(Display *dpy, Window window,
+					   const char *name, const char *value)     
+{
+   Atom property = XInternAtom(dpy, name, False);
+
+   XChangeProperty(dpy,
+                   window,
+                   property,
+                   XA_STRING,
+                   8,
+                   PropModeReplace,
+                   (unsigned char *)value,
+                   strlen(value));
+}
+
 
 /* GLX 1.3 and later */
 PUBLIC Bool
@@ -1248,7 +1266,16 @@ glXMakeContextCurrent( Display *dpy, GLXDrawable draw,
 PUBLIC Bool
 glXMakeCurrent( Display *dpy, GLXDrawable drawable, GLXContext ctx )
 {
-   return glXMakeContextCurrent( dpy, drawable, drawable, ctx );
+   Bool result = glXMakeContextCurrent( dpy, drawable, drawable, ctx );
+
+   const char *renderer = (const char *)glGetString(GL_RENDERER);
+
+   change_string_property(dpy, drawable, "_MESA_DRV", "0");
+   change_string_property(dpy, drawable, "_MESA_DRV_ENGINE_NAME", "Zink Xlib");
+   if(renderer) 
+      change_string_property(dpy, drawable, "_MESA_DRV_GPU_NAME", renderer);
+
+   return result;
 }
 
 
@@ -1876,7 +1903,6 @@ glXGetVisualFromFBConfig( Display *dpy, GLXFBConfig config )
       return NULL;
    }
 }
-
 
 PUBLIC GLXWindow
 glXCreateWindow(Display *dpy, GLXFBConfig config, Window win,
