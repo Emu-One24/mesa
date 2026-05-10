@@ -77,7 +77,6 @@ EXTENSIONS = [
               features=True, properties=True),
     Extension("VK_KHR_external_memory"),
     Extension("VK_KHR_external_memory_fd"),
-    Extension("VK_KHR_vulkan_memory_model"),
     Extension("VK_KHR_workgroup_memory_explicit_layout", alias="explicit_layout", features=True),
     Extension("VK_KHR_pipeline_executable_properties",
               alias="pipestats",
@@ -327,6 +326,7 @@ EXTENSIONS = [
     Extension("VK_KHR_shader_float_controls",
               alias="float_controls"),
     Extension("VK_KHR_format_feature_flags2"),
+    Extension("VK_KHR_vulkan_memory_model", alias="vukan_memory_model",features=True),
 ]
 
 # constructor: Versions(device_version(major, minor, patch), struct_version(major, minor))
