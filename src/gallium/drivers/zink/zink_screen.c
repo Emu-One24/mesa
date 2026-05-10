@@ -3462,6 +3462,7 @@ zink_internal_create_screen(const struct pipe_screen_config *config, int64_t dev
    }
 
    screen->instance_info.loader_version = zink_get_loader_version(screen);
+   /*
    if (config) {
       driParseConfigFiles(config->options, config->options_info, 0, "zink",
                           NULL, NULL, NULL, 0, NULL, 0);
@@ -3470,7 +3471,7 @@ zink_internal_create_screen(const struct pipe_screen_config *config, int64_t dev
       screen->driconf.emulate_point_smooth = driQueryOptionb(config->options, "zink_emulate_point_smooth");
       screen->driconf.zink_shader_object_enable = driQueryOptionb(config->options, "zink_shader_object_enable");
    }
-
+   */
    //if (!zink_create_instance(screen, dev_major > 0 && dev_major < 255))
    if (!zink_create_instance(screen, 1))
       goto fail;
@@ -3522,7 +3523,7 @@ zink_internal_create_screen(const struct pipe_screen_config *config, int64_t dev
          debug_printf("ZINK: failed to detect features\n");
       goto fail;
    }
-
+   
    setup_renderdoc(screen);
    if (screen->threaded_submit && !util_queue_init(&screen->flush_queue, "zfq", 8, 1, UTIL_QUEUE_INIT_RESIZE_IF_FULL, screen)) {
       if (!screen->driver_name_is_inferred)
