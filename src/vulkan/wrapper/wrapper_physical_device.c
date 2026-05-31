@@ -278,6 +278,13 @@ VkResult enumerate_physical_device(struct vk_instance *_instance)
             supported_features->dualSrcBlend = true;
          	WRAPPER_LOG(info, "Faking multiDrawIndirect feature");
             supported_features->multiDrawIndirect = true;
+            WRAPPER_LOG(info, "Faking fragmentStoresAndAtomics feature");
+            supported_features->fragmentStoresAndAtomics = true;
+            WRAPPER_LOG(info, "Faking VK_EXT_depth_clip_enable");
+            pdevice->vk.supported_extensions.EXT_depth_clip_enable = true;
+            supported_features->depthClipEnable = true;
+            WRAPPER_LOG(info, "Disabling VK_EXT_line_rasterization for Mali");
+            pdevice->vk.supported_extensions.EXT_line_rasterization = false;
          }
          WRAPPER_LOG(info, "Disabling VK_EXT_calibrated_timestamps");
          pdevice->vk.supported_extensions.EXT_calibrated_timestamps = false;
@@ -305,8 +312,12 @@ VkResult enumerate_physical_device(struct vk_instance *_instance)
 
       pdevice->emulate_bcn = wrapper_emulate_bcn;
 
-      if (wrapper_dmaheap_cached == -1)
-         wrapper_dmaheap_cached = getenv("WRAPPER_DMAHEAP_CACHED") && atoi(getenv("WRAPPER_DMAHEAP_CACHED"));
+      if (wrapper_dmaheap_cached == -1) {
+         if (getenv("WRAPPER_DMAHEAP_CACHED"))
+            wrapper_dmaheap_cached = atoi(getenv("WRAPPER_DMAHEAP_CACHED"));
+         else
+            wrapper_dmaheap_cached = (pdevice->driver_properties.driverID == VK_DRIVER_ID_ARM_PROPRIETARY) ? 1 : 0;
+      }
 
       if (wrapper_dmaheap_cached)
          pdevice->dma_heap_fd = open("/dev/dma_heap/system", O_RDONLY | O_CLOEXEC);

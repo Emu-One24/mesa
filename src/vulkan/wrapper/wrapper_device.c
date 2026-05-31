@@ -250,6 +250,7 @@ wrapper_CreateDevice(VkPhysicalDevice physicalDevice,
    device->image_table = _mesa_hash_table_u64_create(NULL);
    device->buffer_table = _mesa_hash_table_u64_create(NULL);
    device->fence_table = _mesa_hash_table_u64_create(NULL);
+   device->memory_table = _mesa_hash_table_u64_create(NULL);
    
    simple_mtx_init(&device->resource_mutex, mtx_plain);
    device->physical = physical_device;
@@ -301,6 +302,8 @@ if (pdf2 && pdf2->features.f) { \
    DISABLE_FEATURE(shaderCullDistance);
    DISABLE_FEATURE(dualSrcBlend);
    DISABLE_FEATURE(multiDrawIndirect);
+   DISABLE_FEATURE(fragmentStoresAndAtomics);
+   DISABLE_FEATURE(depthClipEnable);
 
 #undef DISABLE_FEATURE
 
@@ -815,6 +818,12 @@ wrapper_CreateShaderModule(VkDevice _device,
       if (!wrapper_no_patch_OpConstComp) patch_OpConstantComposite_to_OpSpecConstantComposite(code, create_info.codeSize);
       if (!wrapper_no_remove_clip_distance) remove_ClipDistance(code, &create_info.codeSize);
       create_info.pCode = code;
+
+      simple_mtx_unlock(&device->resource_mutex);
+      VkResult result = device->dispatch_table.CreateShaderModule(
+         device->dispatch_handle, &create_info, pAllocator, pShaderModule);
+      free(code);
+      return result;
    }
 
    simple_mtx_unlock(&device->resource_mutex);

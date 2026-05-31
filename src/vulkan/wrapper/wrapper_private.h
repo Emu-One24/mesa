@@ -73,6 +73,7 @@ struct wrapper_device {
    struct hash_table_u64 *buffer_table;
    struct hash_table_u64 *image_table;
    struct hash_table_u64 *fence_table;
+   struct hash_table_u64 *memory_table;
    struct wrapper_physical_device *physical;
    struct vk_device_dispatch_table dispatch_table;
 };

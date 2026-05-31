@@ -290,6 +290,8 @@ wrapper_device_memory_create(struct wrapper_device *device,
 
 void
 wrapper_device_memory_destroy(struct wrapper_device_memory *mem) {
+   if (mem->dispatch_handle != VK_NULL_HANDLE)
+      _mesa_hash_table_u64_remove(mem->device->memory_table, (uint64_t)mem->dispatch_handle);
    wrapper_device_memory_reset(mem);
    list_del(&mem->link);
    vk_free2(&mem->device->vk.alloc, mem->alloc, mem);
@@ -301,14 +303,7 @@ wrapper_device_memory_from_handle(struct wrapper_device *device,
    struct wrapper_device_memory *mem = NULL;
 
    simple_mtx_lock(&device->resource_mutex);
-
-   list_for_each_entry(struct wrapper_device_memory, data,
-                       &device->device_memory_list, link) {
-      if (data->dispatch_handle == handle) {
-         mem = data;
-      }
-   }
-
+   mem = _mesa_hash_table_u64_search(device->memory_table, (uint64_t)handle);
    simple_mtx_unlock(&device->resource_mutex);
    return mem;
 }
@@ -391,6 +386,7 @@ wrapper_AllocateMemory(VkDevice _device,
       vk_error(device, result);
    } else {
       *pMemory = mem->dispatch_handle;
+      _mesa_hash_table_u64_insert(mem->device->memory_table, (uint64_t)mem->dispatch_handle, mem);
    }
 
 out:
