@@ -39,8 +39,7 @@ jobs:
             -Dgallium-drivers= \
             -Dplatforms=android \
             -Dbuildtype=release \
-            -Dandroid-stub=true \
-            -Ddrm=disabled
+            -Dandroid-stub=true
 
           ninja -C build src/vulkan/wrapper/libvulkan_wrapper.so
 
