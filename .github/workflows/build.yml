@@ -1,0 +1,48 @@
+name: Build libvulkan_wrapper
+
+on:
+  push:
+    branches: [ wrapper-25 ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: wrapper-25
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            meson ninja-build python3 python3-mako \
+            libexpat1-dev pkg-config \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
+
+      - name: Build
+        run: |
+          export ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME
+          export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+
+          meson setup build \
+            --cross-file .android/aarch64-android.ini \
+            -Dvulkan-drivers=wrapper \
+            -Dgallium-drivers= \
+            -Dplatforms=android \
+            -Dbuildtype=release \
+            -Dandroid-stub=true
+
+          ninja -C build src/vulkan/wrapper/libvulkan_wrapper.so
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: libvulkan_wrapper
+          path: build/src/vulkan/wrapper/libvulkan_wrapper.so
