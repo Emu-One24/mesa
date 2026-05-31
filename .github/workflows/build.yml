@@ -16,13 +16,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo dpkg --add-architecture arm64
-          sudo apt-get update
           sudo apt-get install -y \
             ninja-build python3 python3-mako \
             libexpat1-dev pkg-config \
             gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
-            libdrm-dev libdrm-dev:arm64
+            libdrm-dev
           pip3 install meson
 
       - name: Setup Android NDK
@@ -41,7 +39,8 @@ jobs:
             -Dgallium-drivers= \
             -Dplatforms=android \
             -Dbuildtype=release \
-            -Dandroid-stub=true
+            -Dandroid-stub=true \
+            -Ddrm=disabled
 
           ninja -C build src/vulkan/wrapper/libvulkan_wrapper.so
 
