@@ -46,15 +46,7 @@ jobs:
 
           # pkg-config
           mkdir -p $HOME/cross-pkgconfig
-          printf 'prefix=%s
-libdir=${prefix}/usr/lib/aarch64-linux-android
-includedir=${prefix}/usr/include
-Name: libdrm
-Description: DRM
-Version: 2.4.113
-Libs: -L${libdir} -ldrm
-Cflags: -I${includedir}/libdrm
-' "$SYSROOT" > $HOME/cross-pkgconfig/libdrm.pc
+          printf 'prefix=%s\nlibdir=${prefix}/usr/lib/aarch64-linux-android\nincludedir=${prefix}/usr/include\nName: libdrm\nDescription: DRM\nVersion: 2.4.113\nLibs: -L${libdir} -ldrm\nCflags: -I${includedir}/libdrm\n' "$SYSROOT" > $HOME/cross-pkgconfig/libdrm.pc
           echo "PKG_CONFIG_LIBDIR=$HOME/cross-pkgconfig:/usr/lib/pkgconfig" >> $GITHUB_ENV
 
       - name: Build
