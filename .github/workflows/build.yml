@@ -46,6 +46,8 @@ jobs:
           export ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME
           export PATH=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
           echo "Using NDK: $ANDROID_NDK_LATEST_HOME"
+          NDK_SYSROOT=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot
+          sed -i "s|/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot|$NDK_SYSROOT|g" .android/aarch64-android.ini
           meson setup build \
             --cross-file .android/aarch64-android.ini \
             -Dvulkan-drivers=wrapper \
