@@ -43,7 +43,7 @@ jobs:
 
       - name: Build
         run: |
-          export ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME
+          export ANDROID_NDK_HOME=$ANDROID_NDK_ROOT
           export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
           meson setup build \
             --cross-file .android/aarch64-android.ini \
