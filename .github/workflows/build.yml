@@ -28,11 +28,16 @@ jobs:
         with:
           ndk-version: r26d
 
+      - name: Setup fake libdrm pc file
+        run: |
+          mkdir -p $HOME/cross-pkgconfig
+          printf 'prefix=/usr\nlibdir=/usr/lib\nincludedir=/usr/include\nName: libdrm\nDescription: DRM\nVersion: 2.4.113\nLibs: -ldrm\nCflags: -I${includedir}/libdrm\n' > $HOME/cross-pkgconfig/libdrm.pc
+          echo "PKG_CONFIG_LIBDIR=$HOME/cross-pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig" >> $GITHUB_ENV
+
       - name: Build
         run: |
           export ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME
           export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-
           meson setup build \
             --cross-file .android/aarch64-android.ini \
             -Dvulkan-drivers=wrapper \
@@ -40,7 +45,6 @@ jobs:
             -Dplatforms=android \
             -Dbuildtype=release \
             -Dandroid-stub=true
-
           ninja -C build src/vulkan/wrapper/libvulkan_wrapper.so
 
       - name: Upload artifact
