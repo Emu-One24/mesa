@@ -40,30 +40,33 @@ jobs:
           sudo cp /usr/include/libdrm/drm_mode.h $SYSROOT/usr/include/
 
           # Build aarch64 stub libdrm.so with all required symbols
-          cat > /tmp/drm_stub.c << 'STUBEOF'
+          python3 -c "
+stubs = '''
 #include <stddef.h>
 #include <stdint.h>
 int drmIoctl(int fd, unsigned long r, void *a){return -1;}
-int drmSyncobjFDToHandle(int fd, int sf, uint32_t *h){return -1;}
-int drmSyncobjDestroy(int fd, uint32_t h){return -1;}
-int drmSyncobjCreate(int fd, uint32_t f, uint32_t *h){return -1;}
-int drmSyncobjTransfer(int fd, uint32_t dh, uint64_t dp, uint32_t sh, uint64_t sp, uint32_t f){return -1;}
-int drmSyncobjExportSyncFile(int fd, uint32_t h, int *sf){return -1;}
-int drmGetDevice2(int fd, uint32_t f, void **d){return -1;}
+int drmSyncobjFDToHandle(int fd, int sf, unsigned int *h){return -1;}
+int drmSyncobjDestroy(int fd, unsigned int h){return -1;}
+int drmSyncobjCreate(int fd, unsigned int f, unsigned int *h){return -1;}
+int drmSyncobjTransfer(int fd, unsigned int dh, unsigned long long dp, unsigned int sh, unsigned long long sp, unsigned int f){return -1;}
+int drmSyncobjExportSyncFile(int fd, unsigned int h, int *sf){return -1;}
+int drmGetDevice2(int fd, unsigned int f, void **d){return -1;}
 int drmDevicesEqual(void *a, void *b){return 0;}
-int drmSyncobjQuery(int fd, uint32_t *h, uint64_t *p, uint32_t c){return -1;}
-int drmSyncobjTimelineWait(int fd, uint32_t *h, uint64_t *p, unsigned c, int64_t t, uint32_t f, uint32_t *fi){return -1;}
-int drmGetDevices2(uint32_t f, void **d, int n){return -1;}
+int drmSyncobjQuery(int fd, unsigned int *h, unsigned long long *p, unsigned int c){return -1;}
+int drmSyncobjTimelineWait(int fd, unsigned int *h, unsigned long long *p, unsigned c, long long t, unsigned int f, unsigned int *fi){return -1;}
+int drmGetDevices2(unsigned int f, void **d, int n){return -1;}
 void drmFreeDevices(void **d, int n){}
-int drmSyncobjWait(int fd, uint32_t *h, unsigned c, int64_t t, uint32_t f, uint32_t *fi){return -1;}
-int drmGetCap(int fd, uint64_t c, uint64_t *v){return -1;}
-int drmSyncobjTimelineSignal(int fd, const uint32_t *h, uint64_t *p, uint32_t c){return -1;}
-int drmSyncobjSignal(int fd, const uint32_t *h, uint32_t c){return -1;}
-int drmSyncobjReset(int fd, const uint32_t *h, uint32_t c){return -1;}
-int drmSyncobjImportSyncFile(int fd, uint32_t h, int sf){return -1;}
-int drmSyncobjHandleToFD(int fd, uint32_t h, int *fdo){return -1;}
+int drmSyncobjWait(int fd, unsigned int *h, unsigned c, long long t, unsigned int f, unsigned int *fi){return -1;}
+int drmGetCap(int fd, unsigned long long c, unsigned long long *v){return -1;}
+int drmSyncobjTimelineSignal(int fd, const unsigned int *h, unsigned long long *p, unsigned int c){return -1;}
+int drmSyncobjSignal(int fd, const unsigned int *h, unsigned int c){return -1;}
+int drmSyncobjReset(int fd, const unsigned int *h, unsigned int c){return -1;}
+int drmSyncobjImportSyncFile(int fd, unsigned int h, int sf){return -1;}
+int drmSyncobjHandleToFD(int fd, unsigned int h, int *fdo){return -1;}
 void drmFreeDevice(void **d){}
-STUBEOF
+'''
+open('/tmp/drm_stub.c', 'w').write(stubs)
+"
           $ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang \
             -shared -fPIC -o /tmp/libdrm.so /tmp/drm_stub.c
           sudo cp /tmp/libdrm.so $SYSROOT/usr/lib/aarch64-linux-android/
