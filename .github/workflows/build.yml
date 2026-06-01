@@ -51,8 +51,7 @@ jobs:
             -Dgallium-drivers= \
             -Dplatforms=android \
             -Dbuildtype=release \
-            -Dandroid-stub=true \
-            -Dwsi-android=disabled
+            -Dandroid-stub=true
           ninja -C build src/vulkan/wrapper/libvulkan_wrapper.so
 
       - name: Upload artifact
