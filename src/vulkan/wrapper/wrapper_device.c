@@ -303,7 +303,6 @@ if (pdf2 && pdf2->features.f) { \
    DISABLE_FEATURE(dualSrcBlend);
    DISABLE_FEATURE(multiDrawIndirect);
    DISABLE_FEATURE(fragmentStoresAndAtomics);
-   DISABLE_FEATURE(depthClipEnable);
 
 #undef DISABLE_FEATURE
 

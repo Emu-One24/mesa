@@ -1,4 +1,5 @@
 #include "wrapper_private.h"
+#include <fcntl.h>
 #include "wrapper_log.h"
 #include "wrapper_entrypoints.h"
 #include "vk_common_entrypoints.h"
