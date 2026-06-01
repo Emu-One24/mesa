@@ -38,6 +38,8 @@ jobs:
           sudo cp /usr/include/xf86drm.h $SYSROOT/usr/include/
           sudo cp /usr/include/xf86drmMode.h $SYSROOT/usr/include/
           sudo cp -r /usr/include/libdrm $SYSROOT/usr/include/
+          sudo cp /usr/include/libdrm/drm.h $SYSROOT/usr/include/
+          sudo cp /usr/include/libdrm/drm_mode.h $SYSROOT/usr/include/
 
       - name: Build
         run: |
