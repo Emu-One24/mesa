@@ -1,4 +1,6 @@
 #include "wrapper_log.h"
+#include <time.h>
+#include <fcntl.h>
 #include "wrapper_util.h"
 
 #define PATH_MAX_SIZE 1024
