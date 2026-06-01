@@ -33,8 +33,9 @@ jobs:
           mkdir -p $HOME/cross-pkgconfig
           printf 'prefix=/usr\nlibdir=/usr/lib\nincludedir=/usr/include\nName: libdrm\nDescription: DRM\nVersion: 2.4.113\nLibs: -ldrm\nCflags: -I${includedir}/libdrm\n' > $HOME/cross-pkgconfig/libdrm.pc
           echo "PKG_CONFIG_LIBDIR=$HOME/cross-pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig" >> $GITHUB_ENV
-          NDK=$ANDROID_NDK_LATEST_HOME
+          NDK=$(find /home/runner -name "r26d" -type d 2>/dev/null | head -1)
           SYSROOT=$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot
+          echo "Copying headers to: $SYSROOT"
           sudo cp /usr/include/xf86drm.h $SYSROOT/usr/include/
           sudo cp /usr/include/xf86drmMode.h $SYSROOT/usr/include/
           sudo cp -r /usr/include/libdrm $SYSROOT/usr/include/
@@ -43,8 +44,10 @@ jobs:
 
       - name: Build
         run: |
-          export ANDROID_NDK_HOME=$ANDROID_NDK_ROOT
-          export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+          NDK=$(find /home/runner -name "r26d" -type d 2>/dev/null || echo $ANDROID_NDK_LATEST_HOME)
+          export ANDROID_NDK_HOME=$NDK
+          export PATH=$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+          echo "Using NDK: $NDK"
           meson setup build \
             --cross-file .android/aarch64-android.ini \
             -Dvulkan-drivers=wrapper \
