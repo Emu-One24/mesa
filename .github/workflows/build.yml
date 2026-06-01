@@ -54,7 +54,9 @@ jobs:
             -Dgallium-drivers= \
             -Dplatforms=android \
             -Dbuildtype=release \
-            -Dandroid-stub=true
+            -Dandroid-stub=true \\
+            -Dc_args='-D__TERMUX__' \\
+            -Dcpp_args='-D__TERMUX__'
           ninja -C build src/vulkan/wrapper/libvulkan_wrapper.so
 
       - name: Upload artifact
